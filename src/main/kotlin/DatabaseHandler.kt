@@ -3,7 +3,6 @@ package com.basyair7
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.io.File
 import java.sql.Connection
 import java.time.LocalDateTime
 
@@ -12,25 +11,36 @@ class DatabaseHandler {
         createdatabase()
     }
 
-    fun saveData(temperature: Double, humidity: Double): SensorDataModel? {
-        if(!File("./sensor_data.db").exists()) createdatabase()
+    fun saveData(id: Int = 0, temperature: Double, humidity: Double): SensorDataModel? {
+        createdatabase()
         var sensorData: SensorDataModel? = null
-        var id: Int
+        var idPost: Int
         val now = LocalDateTime.now()
         val datetime = "${now.dayOfMonth}/${now.monthValue}/${now.year} (${now.hour}.${now.minute}.${now.second})"
         transaction {
-            SensorData.insert {
-                it[SensorData.temperature] = temperature
-                it[SensorData.humidity] = humidity
-                it[createDate] = datetime
+            if (id != 0) {
+                SensorData.insert {
+                    it[SensorData.id] = id
+                    it[SensorData.temperature] = temperature
+                    it[SensorData.humidity] = humidity
+                    it[createDate] = datetime
+                }
             }
-            id = SensorData.select {
+            else {
+                SensorData.insert {
+                    it[SensorData.temperature] = temperature
+                    it[SensorData.humidity] = humidity
+                    it[createDate] = datetime
+                }
+            }
+
+            // see result data if success post
+            idPost = SensorData.select {
                 (SensorData.temperature eq temperature) and (SensorData.humidity eq humidity)
             }.single()[SensorData.id]
-            
-            // see result data if success post
+
             val result = SensorData.select {
-                SensorData.id eq id
+                SensorData.id eq idPost
             }.singleOrNull()
             if (result != null) {
                 sensorData = SensorDataModel.fromResultRow(result)
@@ -40,7 +50,7 @@ class DatabaseHandler {
     }
 
     fun findAllData(): List<SensorDataModel> {
-        if(!File("./sensor_data.db").exists()) createdatabase()
+        createdatabase()
         var sensorDataList = listOf<SensorDataModel>()
         transaction {
             sensorDataList = SensorData.selectAll().map {
@@ -51,7 +61,7 @@ class DatabaseHandler {
     }
 
     fun findDataById(id: Int): SensorDataModel? {
-        if(!File("./sensor_data.db").exists()) createdatabase()
+        createdatabase()
         var sensorData: SensorDataModel? = null
         transaction {
             val result = SensorData.select {
@@ -65,7 +75,7 @@ class DatabaseHandler {
     }
 
     fun updateData(id: Int, temperature: Double, humidity: Double): SensorDataModel? {
-        if(!File("./sensor_data.db").exists()) createdatabase()
+        createdatabase()
         var sensorData: SensorDataModel? = null
         val now = LocalDateTime.now()
         val datetime = "${now.dayOfMonth}/${now.monthValue}/${now.year} (${now.hour}.${now.minute}.${now.second})"
@@ -88,7 +98,7 @@ class DatabaseHandler {
     }
 
     fun deleteDataById(id: Int) {
-        if(!File("./sensor_data.db").exists()) createdatabase()
+        createdatabase()
         transaction {
             SensorData.deleteWhere { SensorData.id eq id }
         }

@@ -7,7 +7,7 @@ import io.ktor.response.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SensorDataAPI(val temperature: Double, val humidity: Double)
+data class SensorDataAPI(val id: Int = 0, val temperature: Double, val humidity: Double)
 
 @Serializable
 data class DataAPITest(val key: String = "", val name: String = "kotlin")
@@ -31,6 +31,7 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
         try {
             val param = call.receive<SensorDataAPI>()
             val result = dbHandler.saveData(
+                id = param.id,
                 temperature = param.temperature,
                 humidity = param.humidity
             )
@@ -53,7 +54,8 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
                 if (result != null) {
                     call.respond(HttpStatusCode.OK, result)
                 } else {
-                    call.respondText("Data sensor dengan ID $id tidak ditemukan", status = HttpStatusCode.NotFound)
+                    val result2 = dbHandler.saveData(id, sensorData.temperature, sensorData.humidity)
+                    if (result2 != null) call.respond(HttpStatusCode.OK, result2)
                 }
             } else {
                 call.respond(HttpStatusCode.BadRequest, "ID tidak valid")
@@ -66,7 +68,7 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
     suspend fun getAllData(call: ApplicationCall) {
         try {
             val sensorDataList = dbHandler.findAllData()
-            if (!sensorDataList.isEmpty()) {
+            if (sensorDataList.isNotEmpty()) {
                 call.respond(sensorDataList)
             } else {
                 call.respondText("Tidak ada data", status = HttpStatusCode.NotFound)
