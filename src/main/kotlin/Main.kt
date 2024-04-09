@@ -20,6 +20,14 @@ fun main() {
         }
 
         routing {
+            get("/test") {
+                apiHandler.testgetAPI(call)
+            }
+
+            post("/test") {
+                apiHandler.testpostAPI(call)
+            }
+
             post("/sensor") {
                 apiHandler.saveData(call)
             }
@@ -30,10 +38,6 @@ fun main() {
 
             get("/sensor") {
                 apiHandler.getAllData(call)
-            }
-
-            get("/test") {
-                apiHandler.testAPI(call)
             }
 
             get("/sensor/{id}") {

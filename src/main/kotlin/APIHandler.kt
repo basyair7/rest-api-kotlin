@@ -10,12 +10,21 @@ import kotlinx.serialization.Serializable
 data class SensorDataAPI(val temperature: Double, val humidity: Double)
 
 @Serializable
-data class DataAPITest(val key: String)
+data class DataAPITest(val key: String = "", val name: String = "kotlin")
 
 class APIHandler(private val dbHandler: DatabaseHandler) {
-    suspend fun testAPI(call: ApplicationCall) {
-        val param = DataAPITest("hello world")
+    suspend fun testgetAPI(call: ApplicationCall) {
+        val param = DataAPITest(key="hello world")
         call.respond(HttpStatusCode.OK, param)
+    }
+
+    suspend fun testpostAPI(call: ApplicationCall) {
+        val param = call.receive<DataAPITest>()
+        val key = param.key
+        val name = param.name
+
+        val result = DataAPITest(key, name)
+        call.respond(HttpStatusCode.OK, result)
     }
 
     suspend fun saveData(call: ApplicationCall) {
