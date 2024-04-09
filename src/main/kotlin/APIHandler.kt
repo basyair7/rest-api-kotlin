@@ -9,9 +9,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SensorDataAPI(val temperature: Double, val humidity: Double)
 
+@Serializable
+data class DataAPITest(val key: String)
+
 class APIHandler(private val dbHandler: DatabaseHandler) {
     suspend fun testAPI(call: ApplicationCall) {
-        call.respondText("{\"test\": \"hello\"}")
+        val param = DataAPITest("hello world")
+        call.respond(HttpStatusCode.OK, param)
     }
 
     suspend fun saveData(call: ApplicationCall) {
