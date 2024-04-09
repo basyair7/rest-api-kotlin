@@ -50,12 +50,12 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 val sensorData = call.receive<SensorDataAPI>()
-                val result = dbHandler.updateData(id, sensorData.temperature, sensorData.humidity)
+                var result = dbHandler.updateData(id, sensorData.temperature, sensorData.humidity)
                 if (result != null) {
                     call.respond(HttpStatusCode.OK, result)
                 } else {
-                    val result2 = dbHandler.saveData(id, sensorData.temperature, sensorData.humidity)
-                    if (result2 != null) call.respond(HttpStatusCode.OK, result2)
+                    result = dbHandler.saveData(id, sensorData.temperature, sensorData.humidity)
+                    if (result != null) call.respond(HttpStatusCode.OK, result)
                 }
             } else {
                 call.respond(HttpStatusCode.BadRequest, "ID tidak valid")
