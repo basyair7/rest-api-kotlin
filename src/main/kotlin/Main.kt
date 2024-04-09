@@ -12,14 +12,14 @@ import io.ktor.server.netty.*
 fun main() {
     val dbHandler = DatabaseHandler()
     val apiHandler = APIHandler(dbHandler)
-    val dotenv = Dotenv.load()
+    val dotenv = Dotenv.configure().load()
 
     embeddedServer(Netty, port = 8080) {
         install(Authentication) {
             basic("basic-auth") {
                 realm = "Ktor Server"
                 validate { credentials ->
-                    if(credentials.name == dotenv["USERNAME"] && credentials.password == dotenv["PASSWORD"])
+                    if(credentials.name == dotenv["USER"] && credentials.password == dotenv["PASSWORD"])
                     {
                         UserIdPrincipal(credentials.name)
                     } else {
