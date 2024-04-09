@@ -17,11 +17,15 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
     suspend fun saveData(call: ApplicationCall) {
         try {
             val param = call.receive<SensorDataAPI>()
-            val id = dbHandler.saveData(
+            val result = dbHandler.saveData(
                 temperature = param.temperature,
                 humidity = param.humidity
             )
-            call.respond(HttpStatusCode.OK, "Data sensor berhasil disimpan dengan ID: $id")
+            if (result != null) {
+                call.respond(HttpStatusCode.OK, result)
+            } else {
+                call.respondText("Data sensor tidak berhasil disimpan", status = HttpStatusCode.BadRequest)
+            }
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError, "Error: ${e.message}")
         }
@@ -32,8 +36,12 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 val sensorData = call.receive<SensorDataAPI>()
-                dbHandler.updateData(id, sensorData.temperature, sensorData.humidity)
-                call.respond(HttpStatusCode.OK, "Data ID $id telah diupdate")
+                val result = dbHandler.updateData(id, sensorData.temperature, sensorData.humidity)
+                if (result != null) {
+                    call.respond(HttpStatusCode.OK, result)
+                } else {
+                    call.respondText("Data sensor dengan ID $id tidak ditemukan", status = HttpStatusCode.NotFound)
+                }
             } else {
                 call.respond(HttpStatusCode.BadRequest, "ID tidak valid")
             }
@@ -45,7 +53,11 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
     suspend fun getAllData(call: ApplicationCall) {
         try {
             val sensorDataList = dbHandler.findAllData()
-            call.respond(sensorDataList)
+            if (!sensorDataList.isEmpty()) {
+                call.respond(sensorDataList)
+            } else {
+                call.respondText("Tidak ada data", status = HttpStatusCode.NotFound)
+            }
         } catch (e: Exception) {
             call.respond(HttpStatusCode.InternalServerError, "Error: ${e.message}")
         }
