@@ -13,12 +13,12 @@ data class SensorDataAPI(val id: Int = 0, val temperature: Double, val humidity:
 data class DataAPITest(val key: String = "", val name: String = "kotlin")
 
 class APIHandler(private val dbHandler: DatabaseHandler) {
-    suspend fun testgetAPI(call: ApplicationCall) {
+    suspend fun testGetAPI(call: ApplicationCall) {
         val param = DataAPITest(key="hello world")
         call.respond(HttpStatusCode.OK, param)
     }
 
-    suspend fun testpostAPI(call: ApplicationCall) {
+    suspend fun testPostAPI(call: ApplicationCall) {
         val param = call.receive<DataAPITest>()
         val key = param.key
         val name = param.name

@@ -38,11 +38,11 @@ fun main() {
         routing {
             authenticate("basic-auth") {
                 get("/test") {
-                    apiHandler.testgetAPI(call)
+                    apiHandler.testGetAPI(call)
                 }
 
                 post("/test") {
-                    apiHandler.testpostAPI(call)
+                    apiHandler.testPostAPI(call)
                 }
 
                 post("/sensor") {
