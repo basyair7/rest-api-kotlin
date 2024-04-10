@@ -8,11 +8,11 @@ import java.time.LocalDateTime
 
 class DatabaseHandler {
     init {
-        createdatabase()
+        createDatabase()
     }
 
     fun saveData(id: Int = 0, temperature: Double, humidity: Double): SensorDataModel? {
-        createdatabase()
+        createDatabase()
         var sensorData: SensorDataModel? = null
         var idPost: Int
         val now = LocalDateTime.now()
@@ -50,7 +50,7 @@ class DatabaseHandler {
     }
 
     fun findAllData(): List<SensorDataModel> {
-        createdatabase()
+        createDatabase()
         var sensorDataList = listOf<SensorDataModel>()
         transaction {
             sensorDataList = SensorData.selectAll().map {
@@ -61,7 +61,7 @@ class DatabaseHandler {
     }
 
     fun findDataById(id: Int): SensorDataModel? {
-        createdatabase()
+        createDatabase()
         var sensorData: SensorDataModel? = null
         transaction {
             val result = SensorData.select {
@@ -75,7 +75,7 @@ class DatabaseHandler {
     }
 
     fun updateData(id: Int, temperature: Double, humidity: Double): SensorDataModel? {
-        createdatabase()
+        createDatabase()
         var sensorData: SensorDataModel? = null
         val now = LocalDateTime.now()
         val datetime = "${now.dayOfMonth}/${now.monthValue}/${now.year} (${now.hour}.${now.minute}.${now.second})"
@@ -98,13 +98,13 @@ class DatabaseHandler {
     }
 
     fun deleteDataById(id: Int) {
-        createdatabase()
+        createDatabase()
         transaction {
             SensorData.deleteWhere { SensorData.id eq id }
         }
     }
 
-    private fun createdatabase() {
+    private fun createDatabase() {
         Database.connect("jdbc:sqlite:sensor_data.db", driver = "org.sqlite.JDBC")
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
         transaction {
@@ -121,7 +121,8 @@ object SensorData : Table() {
     val updateDate = this.text("updateDate").default("").nullable()
 }
 
-data class SensorDataModel(val id: Int, val temperature: Double, val humidity: Double, val createDate: String?, val updateDate: String?) {
+data class SensorDataModel(val id: Int, val temperature: Double, val humidity: Double, val createDate: String?, val updateDate: String?)
+{
     companion object {
         fun fromResultRow(row: ResultRow): SensorDataModel {
             return SensorDataModel (
