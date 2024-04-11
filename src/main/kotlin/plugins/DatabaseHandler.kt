@@ -1,4 +1,4 @@
-package com.basyair7
+package com.basyair7.plugins
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager

@@ -1,16 +1,10 @@
-package com.basyair7
+package com.basyair7.plugins
 
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class SensorDataAPI(val id: Int = 0, val temperature: Double, val humidity: Double)
-
-@Serializable
-data class DataAPITest(val key: String = "", val name: String = "kotlin")
 
 class APIHandler(private val dbHandler: DatabaseHandler) {
     suspend fun testGetAPI(call: ApplicationCall) {
@@ -110,3 +104,9 @@ class APIHandler(private val dbHandler: DatabaseHandler) {
         }
     }
 }
+
+@Serializable
+data class SensorDataAPI(val id: Int = 0, val temperature: Double, val humidity: Double)
+
+@Serializable
+data class DataAPITest(val key: String = "", val name: String = "kotlin")
