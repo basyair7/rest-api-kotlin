@@ -5,6 +5,12 @@ plugins {
 group = 'com.basyair7'
 version = '1.0-SNAPSHOT'
 
+// java version
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
     mavenCentral()
 }
@@ -32,7 +38,8 @@ test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+//    jvmToolchain(21)
+    jvmToolchain(8)
 }
 
 jar {
